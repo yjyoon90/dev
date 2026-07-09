@@ -8,11 +8,12 @@ export const revalidate = 3600;
 export default async function HomePage({
   searchParams,
 }: {
-  searchParams: { tab?: string };
+  searchParams: Promise<{ tab?: string }>;
 }) {
   const { data, usingSampleData } = await getSubscriptions();
   const today = todayKST();
-  const initialTab = searchParams.tab === "favorites" ? "favorites" : "all";
+  const { tab } = await searchParams;
+  const initialTab = tab === "favorites" ? "favorites" : "all";
 
   return (
     <div>

@@ -15,9 +15,10 @@ export const revalidate = 3600;
 export default async function DetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const sub = await getSubscriptionById(decodeURIComponent(params.id));
+  const { id } = await params;
+  const sub = await getSubscriptionById(decodeURIComponent(id));
   if (!sub) notFound();
 
   const today = todayKST();

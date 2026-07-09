@@ -52,8 +52,8 @@ cp .env.example .env.local
 
 ## 기술 스택
 
-- **Next.js 14** (App Router) — 화면 + 서버 사이드 API 호출을 한 프로젝트에서
-- **React 18 + TypeScript**
+- **Next.js 16** (App Router) — 화면 + 서버 사이드 API 호출을 한 프로젝트에서
+- **React 19 + TypeScript**
 - **Tailwind CSS**
 - 상태 저장: 브라우저 localStorage (별도 DB 불필요)
 
@@ -81,7 +81,7 @@ context/FavoritesContext  # 관심단지 상태(localStorage)
 ## 참고 / 유의사항
 
 - 표시 정보는 **참고용**입니다. 실제 청약 전 반드시 [청약홈](https://www.applyhome.co.kr) 공고 원문을 확인하세요.
-- 보안: 프로젝트는 Next.js 14의 보안 패치 버전을 사용합니다. `npm audit` 에 남는 일부 권고는 Next.js 16으로의 major 업그레이드가 필요하며(주로 이 앱이 쓰지 않는 Image 최적화·i18n 미들웨어 기능 관련), 운영 배포 시 최신 버전 검토를 권장합니다.
+- 보안: 최신 **Next.js 16 + React 19** 를 사용합니다. 직접 의존성은 `npm audit` 클린이며, 남아 있는 moderate 권고 1건은 Next.js가 내부적으로 번들한 postcss 버전(빌드 타임 전용)에서 발생하는 것으로, Next.js 패치 릴리스로만 해소됩니다(앱 런타임에 노출되지 않음).
 
 ## 데이터 출처
 
