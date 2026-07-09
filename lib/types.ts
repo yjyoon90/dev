@@ -24,6 +24,10 @@ export interface ScheduleItem {
 export interface Subscription {
   /** 고유 식별자(주택관리번호 + 공고번호). */
   id: string;
+  /** 주택관리번호 (경쟁률 조회 키). */
+  houseManageNo?: string;
+  /** 공고번호 (경쟁률 조회 키). */
+  pblancNo?: string;
   /** 주택(단지)명. */
   name: string;
   /** 공급 지역. */
@@ -64,3 +68,19 @@ export interface Subscription {
 
 /** 청약 진행 상태(접수일 기준 계산값). */
 export type SubscriptionStatus = "예정" | "접수중" | "마감";
+
+/** 청약 경쟁률 1행 (주택형·순위·거주지 단위). */
+export interface CompetitionRow {
+  /** 주택형 (예: "084.9500A"). */
+  houseType: string;
+  /** 공급 세대수. */
+  supply?: number;
+  /** 순위 코드 (1=1순위, 2=2순위). */
+  rankCode?: number;
+  /** 거주지 구분명 (예: "해당지역", "기타경기", "기타지역"). */
+  resideName?: string;
+  /** 접수 건수. */
+  reqCnt?: number;
+  /** 경쟁률 (예: "12.5", "△" 미달 등 원문 문자열). */
+  rate?: string;
+}

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getSubscriptionById } from "@/lib/api";
+import { getCompetitionRates, getSubscriptionById } from "@/lib/api";
 import { todayKST } from "@/lib/today";
 import {
   formatCount,
@@ -10,6 +10,7 @@ import {
 import StatusBadge from "@/components/StatusBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import KakaoMap from "@/components/KakaoMap";
+import CompetitionTable from "@/components/CompetitionTable";
 
 export const revalidate = 3600;
 
@@ -24,6 +25,10 @@ export default async function DetailPage({
 
   const today = todayKST();
   const status = getStatus(sub, today);
+  const competition = await getCompetitionRates(
+    sub.houseManageNo,
+    sub.pblancNo
+  );
 
   const infoRows: { label: string; value: string }[] = [
     { label: "공급지역", value: sub.region },
@@ -96,6 +101,19 @@ export default async function DetailPage({
           ))}
         </ol>
       </section>
+
+      {/* 청약 경쟁률 (당첨자 발표된 건에만 데이터가 있음) */}
+      {competition.length > 0 && (
+        <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-4 text-base font-bold text-slate-900">
+            청약 경쟁률
+          </h2>
+          <CompetitionTable rows={competition} />
+          <p className="mt-3 text-xs text-slate-400">
+            * 순위·거주지별 접수 경쟁률입니다. (한국부동산원 청약홈)
+          </p>
+        </section>
+      )}
 
       {/* 위치 지도 */}
       {sub.address && (

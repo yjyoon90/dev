@@ -1,4 +1,9 @@
-import type { HouseType, Region, Subscription } from "./types";
+import type {
+  CompetitionRow,
+  HouseType,
+  Region,
+  Subscription,
+} from "./types";
 import { normalizeDate } from "./format";
 import { buildSchedule } from "./schedule";
 import { mockSubscriptions } from "./mockData";
@@ -12,6 +17,8 @@ import { mockSubscriptions } from "./mockData";
  */
 
 const BASE = "https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1";
+// 청약접수 경쟁률 및 특별공급 신청현황 조회 서비스 (공공데이터포털 15098905).
+const CMPET_BASE = "https://api.odcloud.kr/api/ApplyhomeInfoCmpetRtSvc/v1";
 
 /** 공급 유형별 세부 엔드포인트. */
 const ENDPOINTS: { path: string; houseType: HouseType }[] = [
@@ -45,6 +52,8 @@ function mapRow(row: any, houseType: HouseType): Subscription | null {
 
   const base: Omit<Subscription, "schedule"> = {
     id: `${row.HOUSE_MANAGE_NO ?? "x"}-${row.PBLANC_NO ?? "x"}`,
+    houseManageNo: row.HOUSE_MANAGE_NO ? String(row.HOUSE_MANAGE_NO) : undefined,
+    pblancNo: row.PBLANC_NO ? String(row.PBLANC_NO) : undefined,
     name: row.HOUSE_NM ?? "이름 미상",
     region,
     address: row.HSSPLY_ADRES ?? row.HSSPLY_ZIP ?? "",
@@ -143,4 +152,52 @@ export async function getSubscriptionById(
 ): Promise<Subscription | null> {
   const { data } = await getSubscriptions();
   return data.find((s) => s.id === id) ?? null;
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+function mapCompetitionRow(row: any): CompetitionRow | null {
+  const houseType = row.HOUSE_TY ?? row.MODEL_NO;
+  if (!houseType) return null;
+  return {
+    houseType: String(houseType),
+    supply: num(row.SUPLY_HSHLDCO),
+    rankCode: num(row.SUBSCRPT_RANK_CODE),
+    resideName: row.RESIDE_SENM ? String(row.RESIDE_SENM) : undefined,
+    reqCnt: num(row.REQ_CNT),
+    rate: row.CMPET_RATE != null ? String(row.CMPET_RATE) : undefined,
+  };
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+/**
+ * 특정 공고의 APT 청약 경쟁률을 조회한다 (주택형·순위·거주지 단위).
+ * 인증키가 없거나(샘플 모드) 경쟁률 서비스가 아직 미승인/미제공이면 빈 배열.
+ * 분양정보와 동일한 APPLYHOME_SERVICE_KEY 를 사용한다.
+ */
+export async function getCompetitionRates(
+  houseManageNo?: string,
+  pblancNo?: string
+): Promise<CompetitionRow[]> {
+  const serviceKey = process.env.APPLYHOME_SERVICE_KEY?.trim();
+  if (!serviceKey || !houseManageNo || !pblancNo) return [];
+
+  const params = new URLSearchParams({
+    page: "1",
+    perPage: "300",
+    serviceKey,
+    "cond[HOUSE_MANAGE_NO::EQ]": houseManageNo,
+    "cond[PBLANC_NO::EQ]": pblancNo,
+  });
+  const url = `${CMPET_BASE}/getAPTLttotPblancCmpet?${params.toString()}`;
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) return [];
+    const json = await res.json();
+    const rows: unknown[] = json?.data ?? [];
+    return rows
+      .map(mapCompetitionRow)
+      .filter((r): r is CompetitionRow => r !== null);
+  } catch {
+    return [];
+  }
 }
