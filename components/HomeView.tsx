@@ -8,6 +8,7 @@ import SubscriptionCard from "./SubscriptionCard";
 import CalendarView from "./CalendarView";
 import FavoriteAlerts from "./FavoriteAlerts";
 import MultiMap from "./MultiMap";
+import PushToggle from "./PushToggle";
 
 type RegionFilter = "전체" | Region;
 type TypeFilter = "전체" | HouseType;
@@ -116,6 +117,7 @@ export default function HomeView({
   return (
     <div>
       <FavoriteAlerts subscriptions={subscriptions} today={today} />
+      <PushToggle />
 
       {/* 탭 */}
       <div className="mb-4 flex gap-2">

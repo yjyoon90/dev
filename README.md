@@ -55,6 +55,21 @@ cp .env.example .env.local
 
 베이스 URL: `https://api.odcloud.kr/api/ApplyhomeInfoDetailSvc/v1`
 
+## 웹 푸시 알림 설정 (선택 — 앱을 꺼놔도 수신)
+
+관심단지의 접수 시작/마감이 임박하면 매일 아침 푸시로 알려줍니다. 설정하려면:
+
+1. **VAPID 키 생성**: `npx web-push generate-vapid-keys`
+2. **구독 저장소**: [Upstash Redis](https://upstash.com)(무료) 또는 Vercel KV 생성 → REST URL/TOKEN 확보
+3. Vercel(또는 `.env.local`)에 환경변수 설정:
+   - `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`(mailto:)
+   - `CRON_SECRET`(임의 문자열)
+   - `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (또는 `KV_REST_API_URL`/`KV_REST_API_TOKEN`)
+4. 재배포 → 홈 상단에 "📲 앱을 꺼놔도 청약 알림 받기" 토글이 나타납니다.
+
+발송은 `vercel.json`의 Cron(`/api/cron/notify`, 매일 09:00 KST)이 담당합니다.
+환경변수가 없으면 이 기능은 자동으로 비활성화됩니다(앱은 정상 동작).
+
 ## 기술 스택
 
 - **Next.js 16** (App Router) — 화면 + 서버 사이드 API 호출을 한 프로젝트에서
