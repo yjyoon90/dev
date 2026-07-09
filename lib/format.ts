@@ -49,3 +49,74 @@ export function formatCount(n?: number): string {
   if (n == null) return "-";
   return n.toLocaleString("ko-KR") + "세대";
 }
+
+/** 오늘(YYYY-MM-DD) 기준 대상 날짜까지 남은 일수. 과거면 음수. */
+export function daysUntil(dateStr: string | undefined, today: string): number | null {
+  if (!dateStr) return null;
+  const [y, m, d] = dateStr.split("-").map(Number);
+  const [ty, tm, td] = today.split("-").map(Number);
+  if (!y || !ty) return null;
+  const target = Date.UTC(y, m - 1, d);
+  const base = Date.UTC(ty, tm - 1, td);
+  return Math.round((target - base) / 86_400_000);
+}
+
+export type DdayTone = "urgent" | "soon" | "muted";
+
+/** 상태·남은일수로 D-day 배지 정보를 만든다. 마감 건은 null. */
+export function getDday(
+  sub: Pick<Subscription, "receiptStart" | "receiptEnd">,
+  today: string
+): { text: string; tone: DdayTone } | null {
+  const status = getStatus(sub, today);
+  if (status === "접수중") {
+    const n = daysUntil(sub.receiptEnd, today);
+    if (n == null) return { text: "접수중", tone: "urgent" };
+    if (n <= 0) return { text: "오늘마감", tone: "urgent" };
+    return { text: `마감 D-${n}`, tone: "urgent" };
+  }
+  if (status === "예정") {
+    const n = daysUntil(sub.receiptStart, today);
+    if (n == null || n <= 0) return null;
+    return { text: `D-${n}`, tone: n <= 7 ? "soon" : "muted" };
+  }
+  return null; // 마감
+}
+
+/** D-day 배지 색상(tailwind). */
+export function ddayColor(tone: DdayTone): string {
+  switch (tone) {
+    case "urgent":
+      return "bg-red-100 text-red-700 ring-red-600/20";
+    case "soon":
+      return "bg-orange-100 text-orange-700 ring-orange-600/20";
+    case "muted":
+      return "bg-slate-100 text-slate-500 ring-slate-500/20";
+  }
+}
+
+/** 임박순 정렬 키(작을수록 먼저): 접수중 → 예정 → 마감, 각 그룹 내 임박순. */
+export function urgencyRank(
+  sub: Pick<Subscription, "receiptStart" | "receiptEnd">,
+  today: string
+): number {
+  const status = getStatus(sub, today);
+  if (status === "접수중") {
+    return 0 + (daysUntil(sub.receiptEnd, today) ?? 0);
+  }
+  if (status === "예정") {
+    return 100_000 + (daysUntil(sub.receiptStart, today) ?? 9_999);
+  }
+  // 마감: 최근 마감이 위로 (receiptEnd가 오늘에 가까울수록 먼저)
+  return 1_000_000 - (daysUntil(sub.receiptEnd, today) ?? -99_999);
+}
+
+/** 공급주소에서 시/군/구 추출 (예: "경기도 고양시 덕양구 …" → "고양시"). */
+export function getDistrict(address?: string): string | null {
+  if (!address) return null;
+  const tokens = address.trim().split(/\s+/);
+  if (tokens.length < 2) return null;
+  // tokens[0] = 시/도(서울특별시·경기도), tokens[1] = 구/시/군
+  const t = tokens[1];
+  return /(구|시|군)$/.test(t) ? t : null;
+}

@@ -1,6 +1,12 @@
 import Link from "next/link";
 import type { Subscription } from "@/lib/types";
-import { formatCount, formatKoreanDate, getStatus } from "@/lib/format";
+import {
+  ddayColor,
+  formatCount,
+  formatKoreanDate,
+  getDday,
+  getStatus,
+} from "@/lib/format";
 import StatusBadge from "./StatusBadge";
 import FavoriteButton from "./FavoriteButton";
 
@@ -12,6 +18,7 @@ export default function SubscriptionCard({
   today: string;
 }) {
   const status = getStatus(sub, today);
+  const dday = getDday(sub, today);
 
   return (
     <Link
@@ -22,6 +29,15 @@ export default function SubscriptionCard({
         <div className="min-w-0">
           <div className="mb-1 flex flex-wrap items-center gap-1.5">
             <StatusBadge status={status} />
+            {dday && (
+              <span
+                className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-bold ring-1 ring-inset ${ddayColor(
+                  dday.tone
+                )}`}
+              >
+                {dday.text}
+              </span>
+            )}
             <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600">
               {sub.region}
             </span>

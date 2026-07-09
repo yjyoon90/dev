@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { HouseType, Region, Subscription } from "@/lib/types";
-import { getStatus } from "@/lib/format";
+import { getDistrict, getStatus, urgencyRank } from "@/lib/format";
 import { useFavorites } from "@/context/FavoritesContext";
 import SubscriptionCard from "./SubscriptionCard";
 import CalendarView from "./CalendarView";
@@ -12,6 +12,9 @@ type TypeFilter = "전체" | HouseType;
 type StatusFilter = "전체" | "접수중" | "예정" | "마감";
 type ViewMode = "list" | "calendar";
 type Tab = "all" | "favorites";
+type SortMode = "임박순" | "최신순";
+
+const ALL = "전체";
 
 const REGIONS: RegionFilter[] = ["전체", "서울", "경기"];
 const TYPES: TypeFilter[] = ["전체", "APT", "무순위", "오피스텔/도시형"];
@@ -51,18 +54,33 @@ export default function HomeView({
   initialTab?: Tab;
 }) {
   const [region, setRegion] = useState<RegionFilter>("전체");
+  const [district, setDistrict] = useState<string>(ALL);
   const [type, setType] = useState<TypeFilter>("전체");
   const [status, setStatus] = useState<StatusFilter>("전체");
   const [query, setQuery] = useState("");
   const [view, setView] = useState<ViewMode>("list");
   const [tab, setTab] = useState<Tab>(initialTab);
+  const [sort, setSort] = useState<SortMode>("임박순");
 
   const { favorites, ready } = useFavorites();
 
+  // 선택된 지역에 존재하는 시/군/구 목록 (드롭다운 옵션).
+  const districtOptions = useMemo(() => {
+    if (region === "전체") return [];
+    const set = new Set<string>();
+    for (const s of subscriptions) {
+      if (s.region !== region) continue;
+      const d = getDistrict(s.address);
+      if (d) set.add(d);
+    }
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "ko"));
+  }, [subscriptions, region]);
+
   const filtered = useMemo(() => {
-    return subscriptions.filter((s) => {
+    const list = subscriptions.filter((s) => {
       if (tab === "favorites" && !favorites.includes(s.id)) return false;
       if (region !== "전체" && s.region !== region) return false;
+      if (district !== ALL && getDistrict(s.address) !== district) return false;
       if (type !== "전체" && s.houseType !== type) return false;
       if (status !== "전체" && getStatus(s, today) !== status) return false;
       if (query.trim()) {
@@ -72,7 +90,26 @@ export default function HomeView({
       }
       return true;
     });
-  }, [subscriptions, tab, favorites, region, type, status, query, today]);
+    if (sort === "임박순") {
+      list.sort((a, b) => urgencyRank(a, today) - urgencyRank(b, today));
+    } else {
+      list.sort((a, b) =>
+        (b.receiptStart ?? "").localeCompare(a.receiptStart ?? "")
+      );
+    }
+    return list;
+  }, [
+    subscriptions,
+    tab,
+    favorites,
+    region,
+    district,
+    type,
+    status,
+    query,
+    sort,
+    today,
+  ]);
 
   return (
     <div>
@@ -138,10 +175,32 @@ export default function HomeView({
       {/* 필터 칩 */}
       <div className="mb-2 flex flex-wrap gap-1.5">
         {REGIONS.map((r) => (
-          <Chip key={r} active={region === r} onClick={() => setRegion(r)}>
+          <Chip
+            key={r}
+            active={region === r}
+            onClick={() => {
+              setRegion(r);
+              setDistrict(ALL); // 지역 바뀌면 시/군/구 초기화
+            }}
+          >
             {r}
           </Chip>
         ))}
+        {/* 시/군/구 드롭다운 (지역 선택 시 노출) */}
+        {region !== "전체" && districtOptions.length > 0 && (
+          <select
+            value={district}
+            onChange={(e) => setDistrict(e.target.value)}
+            className="rounded-full border-0 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 outline-none focus:ring-brand-400"
+          >
+            <option value={ALL}>시/군/구 전체</option>
+            {districtOptions.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+        )}
       </div>
       <div className="mb-2 flex flex-wrap gap-1.5">
         {TYPES.map((t) => (
@@ -158,9 +217,28 @@ export default function HomeView({
         ))}
       </div>
 
-      <p className="mb-3 text-sm text-slate-400">
-        총 <b className="text-slate-700">{filtered.length}</b>건
-      </p>
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-sm text-slate-400">
+          총 <b className="text-slate-700">{filtered.length}</b>건
+        </p>
+        {/* 정렬 토글 */}
+        <div className="flex rounded-lg bg-slate-100 p-0.5 text-sm">
+          {(["임박순", "최신순"] as SortMode[]).map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setSort(m)}
+              className={`rounded-md px-2.5 py-1 font-medium transition ${
+                sort === m
+                  ? "bg-white text-brand-700 shadow-sm"
+                  : "text-slate-500"
+              }`}
+            >
+              {m}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {view === "calendar" ? (
         <CalendarView subscriptions={filtered} today={today} />
