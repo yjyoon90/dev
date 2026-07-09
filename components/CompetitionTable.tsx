@@ -21,6 +21,15 @@ export default function CompetitionTable({
     return (a.rankCode ?? 0) - (b.rankCode ?? 0);
   });
 
+  // 막대 시각화용 최대 경쟁률(숫자만).
+  const maxRate = Math.max(
+    1,
+    ...sorted.map((r) => {
+      const n = Number(r.rate);
+      return Number.isFinite(n) && n > 0 ? n : 0;
+    })
+  );
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[420px] text-sm">
@@ -36,6 +45,11 @@ export default function CompetitionTable({
         <tbody>
           {sorted.map((r, i) => {
             const rate = formatRate(r.rate);
+            const n = Number(r.rate);
+            const pct =
+              Number.isFinite(n) && n > 0
+                ? Math.max(6, Math.round((n / maxRate) * 100))
+                : 0;
             return (
               <tr
                 key={i}
@@ -53,14 +67,28 @@ export default function CompetitionTable({
                 <td className="py-2 pr-3 text-right text-slate-600 dark:text-slate-300">
                   {r.reqCnt != null ? r.reqCnt.toLocaleString("ko-KR") : "-"}
                 </td>
-                <td
-                  className={`py-2 text-right ${
-                    rate.strong
-                      ? "font-bold text-red-600 dark:text-red-400"
-                      : "font-medium text-slate-700 dark:text-slate-300"
-                  }`}
-                >
-                  {rate.text}
+                <td className="py-2">
+                  <div className="flex items-center justify-end gap-2">
+                    {pct > 0 && (
+                      <div className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-slate-100 sm:block dark:bg-slate-800">
+                        <div
+                          className={`h-full rounded-full ${
+                            rate.strong ? "bg-red-500" : "bg-brand-500"
+                          }`}
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                    )}
+                    <span
+                      className={`w-14 text-right ${
+                        rate.strong
+                          ? "font-bold text-red-600 dark:text-red-400"
+                          : "font-medium text-slate-700 dark:text-slate-300"
+                      }`}
+                    >
+                      {rate.text}
+                    </span>
+                  </div>
                 </td>
               </tr>
             );

@@ -7,11 +7,12 @@ import { useFavorites } from "@/context/FavoritesContext";
 import SubscriptionCard from "./SubscriptionCard";
 import CalendarView from "./CalendarView";
 import FavoriteAlerts from "./FavoriteAlerts";
+import MultiMap from "./MultiMap";
 
 type RegionFilter = "전체" | Region;
 type TypeFilter = "전체" | HouseType;
 type StatusFilter = "전체" | "접수중" | "예정" | "마감";
-type ViewMode = "list" | "calendar";
+type ViewMode = "list" | "calendar" | "map";
 type Tab = "all" | "favorites";
 type SortMode = "임박순" | "최신순";
 
@@ -172,6 +173,17 @@ export default function HomeView({
           >
             캘린더
           </button>
+          <button
+            type="button"
+            onClick={() => setView("map")}
+            className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+              view === "map"
+                ? "bg-white text-brand-700 shadow-sm dark:bg-slate-700 dark:text-brand-300"
+                : "text-slate-500"
+            }`}
+          >
+            지도
+          </button>
         </div>
       </div>
 
@@ -243,7 +255,9 @@ export default function HomeView({
         </div>
       </div>
 
-      {view === "calendar" ? (
+      {view === "map" ? (
+        <MultiMap subscriptions={filtered} />
+      ) : view === "calendar" ? (
         <CalendarView subscriptions={filtered} today={today} />
       ) : filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-900">
