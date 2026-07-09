@@ -71,17 +71,17 @@ export default function CalendarView({
   }, [subscriptions]);
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
       <div className="mb-3 flex items-center justify-between">
         <button
           type="button"
           onClick={() => setMonthIdx((i) => Math.max(0, i - 1))}
           disabled={monthIdx <= 0}
-          className="rounded-lg px-3 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+          className="rounded-lg px-3 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
         >
           ← 이전
         </button>
-        <h3 className="text-base font-bold text-slate-900">
+        <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
           {y}년 {m}월
         </h3>
         <button
@@ -90,7 +90,7 @@ export default function CalendarView({
             setMonthIdx((i) => Math.min(months.length - 1, i + 1))
           }
           disabled={monthIdx >= months.length - 1}
-          className="rounded-lg px-3 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 disabled:opacity-30"
+          className="rounded-lg px-3 py-1 text-sm font-medium text-slate-500 hover:bg-slate-100 disabled:opacity-30 dark:hover:bg-slate-800"
         >
           다음 →
         </button>
@@ -118,15 +118,15 @@ export default function CalendarView({
                 cell.day == null
                   ? "border-transparent"
                   : isToday
-                    ? "border-brand-400 bg-brand-50"
-                    : "border-slate-100"
+                    ? "border-brand-400 bg-brand-50 dark:border-brand-500/50 dark:bg-brand-500/10"
+                    : "border-slate-100 dark:border-slate-800"
               }`}
             >
               {cell.day != null && (
                 <>
                   <div
                     className={`text-xs font-medium ${
-                      isToday ? "text-brand-700" : "text-slate-400"
+                      isToday ? "text-brand-700 dark:text-brand-300" : "text-slate-400"
                     }`}
                   >
                     {cell.day}

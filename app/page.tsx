@@ -18,16 +18,16 @@ export default async function HomePage({
   return (
     <div>
       <section className="mb-5">
-        <h1 className="text-xl font-bold text-slate-900">
+        <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">
           수도권 청약 일정
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
           한국부동산원 청약홈 공공데이터 기반 · 오늘 {today}
         </p>
       </section>
 
       {usingSampleData && (
-        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300">
           <b>샘플 데이터로 표시 중입니다.</b> 실제 청약 데이터를 보려면
           공공데이터포털 인증키를 <code>APPLYHOME_SERVICE_KEY</code> 환경변수에
           설정하세요. (README 참고)

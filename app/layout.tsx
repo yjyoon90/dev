@@ -22,14 +22,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        {/* 첫 페인트 전에 테마 적용해 깜빡임 방지 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('cheongyak:theme');var d=t?t==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;if(d)document.documentElement.classList.add('dark');}catch(e){}})();`,
+          }}
+        />
+      </head>
       <body>
         <FavoritesProvider>
           <Header />
           <main className="mx-auto w-full max-w-[var(--max-w)] px-4 pb-16 pt-6">
             {children}
           </main>
-          <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400">
+          <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500">
             데이터 출처: 한국부동산원 청약홈(공공데이터포털). 실제 청약 시에는
             반드시 청약홈 공고 원문을 확인하세요.
           </footer>

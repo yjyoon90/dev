@@ -69,9 +69,9 @@ export default function FavoriteAlerts({
   };
 
   return (
-    <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4">
+    <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-500/30 dark:bg-red-500/10">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-sm font-bold text-red-700">
+        <p className="text-sm font-bold text-red-700 dark:text-red-300">
           🔔 관심단지 청약 임박 {imminent.length}건
         </p>
         {notify === "default" && (
@@ -91,10 +91,10 @@ export default function FavoriteAlerts({
             <li key={s.id}>
               <Link
                 href={`/subscription/${encodeURIComponent(s.id)}`}
-                className="flex items-center justify-between gap-2 text-sm text-slate-700 hover:text-red-700"
+                className="flex items-center justify-between gap-2 text-sm text-slate-700 hover:text-red-700 dark:text-slate-300 dark:hover:text-red-400"
               >
                 <span className="truncate font-medium">{s.name}</span>
-                <span className="shrink-0 font-bold text-red-600">
+                <span className="shrink-0 font-bold text-red-600 dark:text-red-400">
                   {dday?.text}
                 </span>
               </Link>

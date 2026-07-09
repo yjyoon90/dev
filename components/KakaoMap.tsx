@@ -105,7 +105,7 @@ export default function KakaoMap({
         href={searchUrl}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-sm font-medium text-brand-700 hover:bg-slate-100"
+        className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-6 text-sm font-medium text-brand-700 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:text-brand-300 dark:hover:bg-slate-700"
       >
         📍 카카오맵에서 «{name}» 위치 보기 →
       </a>
@@ -115,7 +115,7 @@ export default function KakaoMap({
   return (
     <div
       ref={ref}
-      className="h-64 w-full overflow-hidden rounded-xl border border-slate-200"
+      className="h-64 w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700"
     />
   );
 }

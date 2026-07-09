@@ -25,7 +25,7 @@ export default function CompetitionTable({
     <div className="overflow-x-auto">
       <table className="w-full min-w-[420px] text-sm">
         <thead>
-          <tr className="border-b border-slate-200 text-left text-xs text-slate-400">
+          <tr className="border-b border-slate-200 text-left text-xs text-slate-400 dark:border-slate-700">
             <th className="py-2 pr-3 font-medium">주택형</th>
             <th className="py-2 pr-3 font-medium">순위</th>
             <th className="py-2 pr-3 font-medium">거주지</th>
@@ -39,25 +39,25 @@ export default function CompetitionTable({
             return (
               <tr
                 key={i}
-                className="border-b border-slate-100 last:border-0"
+                className="border-b border-slate-100 last:border-0 dark:border-slate-800"
               >
-                <td className="py-2 pr-3 font-medium text-slate-800">
+                <td className="py-2 pr-3 font-medium text-slate-800 dark:text-slate-200">
                   {r.houseType}
                 </td>
-                <td className="py-2 pr-3 text-slate-600">
+                <td className="py-2 pr-3 text-slate-600 dark:text-slate-300">
                   {r.rankCode ? `${r.rankCode}순위` : "-"}
                 </td>
-                <td className="py-2 pr-3 text-slate-600">
+                <td className="py-2 pr-3 text-slate-600 dark:text-slate-300">
                   {r.resideName ?? "-"}
                 </td>
-                <td className="py-2 pr-3 text-right text-slate-600">
+                <td className="py-2 pr-3 text-right text-slate-600 dark:text-slate-300">
                   {r.reqCnt != null ? r.reqCnt.toLocaleString("ko-KR") : "-"}
                 </td>
                 <td
                   className={`py-2 text-right ${
                     rate.strong
-                      ? "font-bold text-red-600"
-                      : "font-medium text-slate-700"
+                      ? "font-bold text-red-600 dark:text-red-400"
+                      : "font-medium text-slate-700 dark:text-slate-300"
                   }`}
                 >
                   {rate.text}

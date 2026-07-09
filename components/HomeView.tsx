@@ -37,7 +37,7 @@ function Chip({
       className={`rounded-full px-3 py-1.5 text-sm font-medium transition ${
         active
           ? "bg-brand-600 text-white"
-          : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50"
+          : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800"
       }`}
     >
       {children}
@@ -123,8 +123,8 @@ export default function HomeView({
           onClick={() => setTab("all")}
           className={`border-b-2 px-1 pb-2 text-sm font-semibold transition ${
             tab === "all"
-              ? "border-brand-600 text-brand-700"
-              : "border-transparent text-slate-400 hover:text-slate-600"
+              ? "border-brand-600 text-brand-700 dark:text-brand-400"
+              : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
           }`}
         >
           전체 청약
@@ -134,8 +134,8 @@ export default function HomeView({
           onClick={() => setTab("favorites")}
           className={`border-b-2 px-1 pb-2 text-sm font-semibold transition ${
             tab === "favorites"
-              ? "border-brand-600 text-brand-700"
-              : "border-transparent text-slate-400 hover:text-slate-600"
+              ? "border-brand-600 text-brand-700 dark:text-brand-400"
+              : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
           }`}
         >
           ★ 관심단지{ready && favorites.length > 0 ? ` (${favorites.length})` : ""}
@@ -149,14 +149,14 @@ export default function HomeView({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="단지명·지역 검색"
-          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100"
+          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-brand-500/20"
         />
-        <div className="flex shrink-0 rounded-xl bg-slate-100 p-1">
+        <div className="flex shrink-0 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
           <button
             type="button"
             onClick={() => setView("list")}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
-              view === "list" ? "bg-white text-brand-700 shadow-sm" : "text-slate-500"
+              view === "list" ? "bg-white text-brand-700 shadow-sm dark:bg-slate-700 dark:text-brand-300" : "text-slate-500"
             }`}
           >
             목록
@@ -166,7 +166,7 @@ export default function HomeView({
             onClick={() => setView("calendar")}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
               view === "calendar"
-                ? "bg-white text-brand-700 shadow-sm"
+                ? "bg-white text-brand-700 shadow-sm dark:bg-slate-700 dark:text-brand-300"
                 : "text-slate-500"
             }`}
           >
@@ -194,7 +194,7 @@ export default function HomeView({
           <select
             value={district}
             onChange={(e) => setDistrict(e.target.value)}
-            className="rounded-full border-0 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 outline-none focus:ring-brand-400"
+            className="rounded-full border-0 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-slate-200 outline-none focus:ring-brand-400 dark:bg-slate-900 dark:text-slate-300 dark:ring-slate-700"
           >
             <option value={ALL}>시/군/구 전체</option>
             {districtOptions.map((d) => (
@@ -222,10 +222,10 @@ export default function HomeView({
 
       <div className="mb-3 flex items-center justify-between">
         <p className="text-sm text-slate-400">
-          총 <b className="text-slate-700">{filtered.length}</b>건
+          총 <b className="text-slate-700 dark:text-slate-200">{filtered.length}</b>건
         </p>
         {/* 정렬 토글 */}
-        <div className="flex rounded-lg bg-slate-100 p-0.5 text-sm">
+        <div className="flex rounded-lg bg-slate-100 p-0.5 text-sm dark:bg-slate-800">
           {(["임박순", "최신순"] as SortMode[]).map((m) => (
             <button
               key={m}
@@ -233,7 +233,7 @@ export default function HomeView({
               onClick={() => setSort(m)}
               className={`rounded-md px-2.5 py-1 font-medium transition ${
                 sort === m
-                  ? "bg-white text-brand-700 shadow-sm"
+                  ? "bg-white text-brand-700 shadow-sm dark:bg-slate-700 dark:text-brand-300"
                   : "text-slate-500"
               }`}
             >
@@ -246,7 +246,7 @@ export default function HomeView({
       {view === "calendar" ? (
         <CalendarView subscriptions={filtered} today={today} />
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center text-sm text-slate-400">
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-white py-16 text-center text-sm text-slate-400 dark:border-slate-700 dark:bg-slate-900">
           {tab === "favorites"
             ? "관심단지가 없습니다. 카드의 ☆를 눌러 추가해보세요."
             : "조건에 맞는 청약이 없습니다."}
