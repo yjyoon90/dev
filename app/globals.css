@@ -8,6 +8,10 @@
 
 html {
   scroll-behavior: smooth;
+  /* 일부 모바일 인앱 브라우저(WebView)의 자동 글자 확대(font boosting) 방지 */
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
 body {
