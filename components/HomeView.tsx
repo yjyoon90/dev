@@ -6,6 +6,7 @@ import { getDistrict, getStatus, urgencyRank } from "@/lib/format";
 import { useFavorites } from "@/context/FavoritesContext";
 import SubscriptionCard from "./SubscriptionCard";
 import CalendarView from "./CalendarView";
+import FavoriteAlerts from "./FavoriteAlerts";
 
 type RegionFilter = "전체" | Region;
 type TypeFilter = "전체" | HouseType;
@@ -113,6 +114,8 @@ export default function HomeView({
 
   return (
     <div>
+      <FavoriteAlerts subscriptions={subscriptions} today={today} />
+
       {/* 탭 */}
       <div className="mb-4 flex gap-2">
         <button
