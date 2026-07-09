@@ -20,8 +20,6 @@ const ENDPOINTS: { path: string; houseType: HouseType }[] = [
   { path: "getUrbtyOfctlLttotPblancDetail", houseType: "오피스텔/도시형" },
 ];
 
-const TARGET_REGIONS: Region[] = ["서울", "경기"];
-
 /** 공공 API가 지역명을 "서울"/"경기"/"경기도" 등으로 주는 것을 정규화. */
 function toRegion(areaName?: string): Region | null {
   if (!areaName) return null;
@@ -39,7 +37,10 @@ function num(v: unknown): number | undefined {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** odcloud 응답의 한 row(한글 키)를 내부 Subscription으로 매핑. */
 function mapRow(row: any, houseType: HouseType): Subscription | null {
-  const region = toRegion(row.SUBSCRPT_AREA_CODE_NM ?? row.SUBSCRPT_AREA_NM);
+  // 지역명 필드가 없거나 이름이 달라도, 공급주소로 서울/경기를 판별하도록 폴백.
+  const region = toRegion(
+    row.SUBSCRPT_AREA_CODE_NM ?? row.SUBSCRPT_AREA_NM ?? row.HSSPLY_ADRES
+  );
   if (!region) return null;
 
   const base: Omit<Subscription, "schedule"> = {
@@ -76,25 +77,29 @@ async function fetchEndpoint(
   serviceKey: string
 ): Promise<Subscription[]> {
   const results: Subscription[] = [];
-  for (const region of TARGET_REGIONS) {
+  const perPage = 100;
+  // 서버 필터(cond) 대신 여러 페이지를 받아 앱에서 서울/경기를 필터링한다.
+  // (필드명·필터 문법이 조금 달라도 데이터를 놓치지 않도록 하기 위함)
+  for (let page = 1; page <= 3; page++) {
     const params = new URLSearchParams({
-      page: "1",
-      perPage: "100",
+      page: String(page),
+      perPage: String(perPage),
       serviceKey,
-      "cond[SUBSCRPT_AREA_CODE_NM::EQ]": region,
     });
     const url = `${BASE}/${path}?${params.toString()}`;
     try {
       const res = await fetch(url, { next: { revalidate: 3600 } });
-      if (!res.ok) continue;
+      if (!res.ok) break;
       const json = await res.json();
       const rows: unknown[] = json?.data ?? [];
+      if (rows.length === 0) break;
       for (const row of rows) {
         const mapped = mapRow(row, houseType);
-        if (mapped) results.push(mapped);
+        if (mapped) results.push(mapped); // mapRow가 서울/경기만 통과시킴
       }
+      if (rows.length < perPage) break; // 마지막 페이지
     } catch {
-      // 개별 엔드포인트 실패는 무시하고 나머지 데이터로 진행.
+      break; // 개별 엔드포인트 실패는 무시하고 나머지 데이터로 진행.
     }
   }
   return results;
