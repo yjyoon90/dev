@@ -9,6 +9,7 @@ import {
 } from "@/lib/format";
 import StatusBadge from "@/components/StatusBadge";
 import FavoriteButton from "@/components/FavoriteButton";
+import KakaoMap from "@/components/KakaoMap";
 
 export const revalidate = 3600;
 
@@ -95,6 +96,15 @@ export default async function DetailPage({
           ))}
         </ol>
       </section>
+
+      {/* 위치 지도 */}
+      {sub.address && (
+        <section className="mt-4 rounded-2xl border border-slate-200 bg-white p-5">
+          <h2 className="mb-3 text-base font-bold text-slate-900">위치</h2>
+          <p className="mb-3 text-sm text-slate-500">{sub.address}</p>
+          <KakaoMap address={sub.address} name={sub.name} />
+        </section>
+      )}
 
       {/* 외부 링크 */}
       <div className="mt-4 flex flex-wrap gap-2">
