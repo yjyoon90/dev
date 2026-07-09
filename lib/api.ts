@@ -10,7 +10,7 @@ import { mockSubscriptions } from "./mockData";
 
 /**
  * 청약홈 분양정보 조회 서비스 (공공데이터포털 15098547).
- * odcloud REST 엔드포인트를 호출하고, 서울/경기만 필터링해 정규화한다.
+ * odcloud REST 엔드포인트를 호출하고, 수도권(서울·경기·인천)만 필터링해 정규화한다.
  *
  * 인증키(APPLYHOME_SERVICE_KEY)가 없으면 샘플 데이터로 폴백한다.
  * 서버 전용 모듈(인증키를 클라이언트로 노출하지 않음).
@@ -27,11 +27,12 @@ const ENDPOINTS: { path: string; houseType: HouseType }[] = [
   { path: "getUrbtyOfctlLttotPblancDetail", houseType: "오피스텔/도시형" },
 ];
 
-/** 공공 API가 지역명을 "서울"/"경기"/"경기도" 등으로 주는 것을 정규화. */
+/** 공공 API가 지역명을 "서울"/"경기"/"인천" 등으로 주는 것을 정규화(수도권만). */
 function toRegion(areaName?: string): Region | null {
   if (!areaName) return null;
   if (areaName.includes("서울")) return "서울";
   if (areaName.includes("경기")) return "경기";
+  if (areaName.includes("인천")) return "인천";
   return null;
 }
 
@@ -44,7 +45,7 @@ function num(v: unknown): number | undefined {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** odcloud 응답의 한 row(한글 키)를 내부 Subscription으로 매핑. */
 function mapRow(row: any, houseType: HouseType): Subscription | null {
-  // 지역명 필드가 없거나 이름이 달라도, 공급주소로 서울/경기를 판별하도록 폴백.
+  // 지역명 필드가 없거나 이름이 달라도, 공급주소로 수도권(서울·경기·인천)를 판별하도록 폴백.
   const region = toRegion(
     row.SUBSCRPT_AREA_CODE_NM ?? row.SUBSCRPT_AREA_NM ?? row.HSSPLY_ADRES
   );
@@ -87,7 +88,7 @@ async function fetchEndpoint(
 ): Promise<Subscription[]> {
   const results: Subscription[] = [];
   const perPage = 100;
-  // 서버 필터(cond) 대신 여러 페이지를 받아 앱에서 서울/경기를 필터링한다.
+  // 서버 필터(cond) 대신 여러 페이지를 받아 앱에서 수도권(서울·경기·인천)를 필터링한다.
   // (필드명·필터 문법이 조금 달라도 데이터를 놓치지 않도록 하기 위함)
   for (let page = 1; page <= 3; page++) {
     const params = new URLSearchParams({
@@ -104,7 +105,7 @@ async function fetchEndpoint(
       if (rows.length === 0) break;
       for (const row of rows) {
         const mapped = mapRow(row, houseType);
-        if (mapped) results.push(mapped); // mapRow가 서울/경기만 통과시킴
+        if (mapped) results.push(mapped); // mapRow가 수도권(서울·경기·인천)만 통과시킴
       }
       if (rows.length < perPage) break; // 마지막 페이지
     } catch {
@@ -122,7 +123,7 @@ function sortByReceipt(list: Subscription[]): Subscription[] {
 }
 
 /**
- * 서울/경기 청약 공고 전체를 반환. 인증키가 없으면 샘플 데이터.
+ * 수도권(서울·경기·인천) 청약 공고 전체를 반환. 인증키가 없으면 샘플 데이터.
  * `usingSampleData`로 현재 어떤 데이터인지 화면에서 구분할 수 있다.
  */
 export async function getSubscriptions(): Promise<{

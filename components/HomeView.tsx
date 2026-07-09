@@ -17,7 +17,7 @@ type SortMode = "임박순" | "최신순";
 
 const ALL = "전체";
 
-const REGIONS: RegionFilter[] = ["전체", "서울", "경기"];
+const REGIONS: RegionFilter[] = ["전체", "서울", "경기", "인천"];
 const TYPES: TypeFilter[] = ["전체", "APT", "무순위", "오피스텔/도시형"];
 const STATUSES: StatusFilter[] = ["전체", "접수중", "예정", "마감"];
 

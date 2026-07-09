@@ -19,7 +19,7 @@ export default async function HomePage({
     <div>
       <section className="mb-5">
         <h1 className="text-xl font-bold text-slate-900">
-          서울·경기 청약 일정
+          수도권 청약 일정
         </h1>
         <p className="mt-1 text-sm text-slate-500">
           한국부동산원 청약홈 공공데이터 기반 · 오늘 {today}

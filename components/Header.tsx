@@ -9,7 +9,7 @@ export default function Header() {
             청
           </span>
           <span className="text-base font-bold text-slate-900">
-            서울·경기 청약 캘린더
+            수도권 청약 캘린더
           </span>
         </Link>
         <Link

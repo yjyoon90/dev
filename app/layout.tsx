@@ -4,9 +4,9 @@ import { FavoritesProvider } from "@/context/FavoritesContext";
 import Header from "@/components/Header";
 
 export const metadata: Metadata = {
-  title: "서울·경기 청약 캘린더",
+  title: "수도권 청약 캘린더",
   description:
-    "서울과 경기 지역의 아파트·오피스텔 청약 일정과 상세정보를 한눈에. 한국부동산원 청약홈 공공데이터 기반.",
+    "서울·경기·인천 수도권의 아파트·오피스텔 청약 일정과 상세정보를 한눈에. 한국부동산원 청약홈 공공데이터 기반.",
   manifest: "/manifest.webmanifest",
 };
 

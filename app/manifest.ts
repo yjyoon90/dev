@@ -2,10 +2,10 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "서울·경기 청약 캘린더",
+    name: "수도권 청약 캘린더",
     short_name: "청약캘린더",
     description:
-      "서울·경기 지역 아파트·오피스텔 청약 일정과 상세정보 조회",
+      "서울·경기·인천 수도권 아파트·오피스텔 청약 일정과 상세정보 조회",
     start_url: "/",
     display: "standalone",
     background_color: "#f8fafc",
