@@ -3,6 +3,7 @@ import "./globals.css";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import Header from "@/components/Header";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
+import BottomNav from "@/components/BottomNav";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://dev-ruby-two.vercel.app";
@@ -57,13 +58,10 @@ export default function RootLayout({
         <FavoritesProvider>
           <ServiceWorkerRegister />
           <Header />
-          <main className="mx-auto w-full max-w-[var(--max-w)] px-4 pb-16 pt-6">
+          <main className="mx-auto w-full max-w-[var(--max-w)] px-4 pb-28 pt-6">
             {children}
           </main>
-          <footer className="border-t border-slate-200 bg-white py-6 text-center text-xs text-slate-400 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-500">
-            데이터 출처: 한국부동산원 청약홈(공공데이터포털). 실제 청약 시에는
-            반드시 청약홈 공고 원문을 확인하세요.
-          </footer>
+          <BottomNav />
         </FavoritesProvider>
       </body>
     </html>

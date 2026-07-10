@@ -14,12 +14,6 @@ export default function Header() {
           </span>
         </Link>
         <div className="flex shrink-0 items-center gap-1">
-          <Link
-            href="/?tab=favorites"
-            className="text-sm font-medium text-slate-500 hover:text-brand-600 dark:text-slate-400"
-          >
-            ★ 관심단지
-          </Link>
           <ThemeToggle />
         </div>
       </div>

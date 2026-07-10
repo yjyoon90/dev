@@ -53,6 +53,44 @@ function Stepper({
   );
 }
 
+function CompactStepper({
+  value,
+  setValue,
+  max,
+  unit,
+}: {
+  value: number;
+  setValue: (n: number) => void;
+  max: number;
+  unit: string;
+}) {
+  const clamp = (n: number) => Math.max(0, Math.min(max, n));
+  return (
+    <div className="flex items-center justify-between gap-1">
+      <button
+        type="button"
+        onClick={() => setValue(clamp(value - 1))}
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-slate-100 text-lg font-bold text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+        aria-label="감소"
+      >
+        −
+      </button>
+      <span className="min-w-0 flex-1 text-center text-base font-bold tabular-nums text-slate-900 dark:text-slate-100">
+        {value}
+        {unit}
+      </span>
+      <button
+        type="button"
+        onClick={() => setValue(clamp(value + 1))}
+        className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-brand-600 text-lg font-bold text-white hover:bg-brand-700"
+        aria-label="증가"
+      >
+        +
+      </button>
+    </div>
+  );
+}
+
 function Bar({ label, score, max }: { label: string; score: number; max: number }) {
   const pct = Math.round((score / max) * 100);
   return (
@@ -112,23 +150,25 @@ export default function GajeomCalculator() {
           max={10}
           unit="명"
         />
-        <div className="grid grid-cols-2 gap-3">
-          <Stepper
-            label="청약통장"
-            hint="가입 연수"
-            value={accountYears}
-            setValue={setAccountYears}
-            max={20}
-            unit="년"
-          />
-          <Stepper
-            label="(개월)"
-            hint="추가 개월"
-            value={accountMonths}
-            setValue={setAccountMonths}
-            max={11}
-            unit="개월"
-          />
+        <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+            청약통장 가입기간
+          </p>
+          <p className="mb-2 text-xs text-slate-400">가입 연·월 · 최대 17점</p>
+          <div className="grid grid-cols-2 gap-3">
+            <CompactStepper
+              value={accountYears}
+              setValue={setAccountYears}
+              max={20}
+              unit="년"
+            />
+            <CompactStepper
+              value={accountMonths}
+              setValue={setAccountMonths}
+              max={11}
+              unit="개월"
+            />
+          </div>
         </div>
       </div>
 

@@ -8,7 +8,6 @@ import SubscriptionCard from "./SubscriptionCard";
 import CalendarView from "./CalendarView";
 import FavoriteAlerts from "./FavoriteAlerts";
 import MultiMap from "./MultiMap";
-import PushToggle from "./PushToggle";
 
 type RegionFilter = "전체" | Region;
 type TypeFilter = "전체" | HouseType;
@@ -62,10 +61,10 @@ export default function HomeView({
   const [status, setStatus] = useState<StatusFilter>("전체");
   const [query, setQuery] = useState("");
   const [view, setView] = useState<ViewMode>("list");
-  const [tab, setTab] = useState<Tab>(initialTab);
+  const [tab] = useState<Tab>(initialTab);
   const [sort, setSort] = useState<SortMode>("임박순");
 
-  const { favorites, ready } = useFavorites();
+  const { favorites } = useFavorites();
 
   // 선택된 지역에 존재하는 시/군/구 목록 (드롭다운 옵션).
   const districtOptions = useMemo(() => {
@@ -117,33 +116,6 @@ export default function HomeView({
   return (
     <div>
       <FavoriteAlerts subscriptions={subscriptions} today={today} />
-      <PushToggle />
-
-      {/* 탭 */}
-      <div className="mb-4 flex gap-2">
-        <button
-          type="button"
-          onClick={() => setTab("all")}
-          className={`border-b-2 px-1 pb-2 text-sm font-semibold transition ${
-            tab === "all"
-              ? "border-brand-600 text-brand-700 dark:text-brand-400"
-              : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-          }`}
-        >
-          전체 청약
-        </button>
-        <button
-          type="button"
-          onClick={() => setTab("favorites")}
-          className={`border-b-2 px-1 pb-2 text-sm font-semibold transition ${
-            tab === "favorites"
-              ? "border-brand-600 text-brand-700 dark:text-brand-400"
-              : "border-transparent text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-          }`}
-        >
-          ★ 관심단지{ready && favorites.length > 0 ? ` (${favorites.length})` : ""}
-        </button>
-      </div>
 
       {/* 검색 + 뷰 토글 */}
       <div className="mb-3 flex flex-wrap gap-2">
