@@ -133,7 +133,9 @@ export default async function DetailPage({
             rel="noopener noreferrer"
             className="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-700"
           >
-            청약홈 공고 원문 보기 →
+            {sub.source === "LH"
+              ? "LH청약플러스에서 상세 보기 →"
+              : "청약홈 공고 원문 보기 →"}
           </a>
         )}
         {sub.homepage && (
@@ -149,8 +151,9 @@ export default async function DetailPage({
       </div>
 
       <p className="mt-5 text-xs text-slate-400">
-        * 표시된 정보는 참고용입니다. 실제 청약 전 반드시 청약홈 공고 원문을
-        확인하세요.
+        {sub.source === "LH"
+          ? "* LH 임대는 지역·공고일 위주로 표시됩니다. 상세주소·접수기간·세대수·임대료는 위 'LH청약플러스에서 상세 보기'에서 확인하세요."
+          : "* 표시된 정보는 참고용입니다. 실제 청약 전 반드시 청약홈 공고 원문을 확인하세요."}
       </p>
     </article>
   );
