@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 const items = [
   { href: "/", label: "청약", icon: "🏢" },
@@ -12,6 +12,7 @@ const items = [
 
 export default function BottomNav() {
   const path = usePathname();
+  const router = useRouter();
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-30 border-t border-slate-200 bg-white/95 backdrop-blur dark:border-slate-800 dark:bg-slate-900/95"
@@ -25,6 +26,14 @@ export default function BottomNav() {
             <Link
               key={it.href}
               href={it.href}
+              onClick={(e) => {
+                // 이미 그 탭이면 새로고침 + 맨 위로 (요즘 앱 패턴)
+                if (active) {
+                  e.preventDefault();
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  router.refresh();
+                }
+              }}
               className={`flex flex-1 flex-col items-center gap-0.5 py-2.5 text-xs font-medium transition ${
                 active
                   ? "text-brand-600 dark:text-brand-400"
