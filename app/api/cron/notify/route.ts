@@ -48,21 +48,26 @@ export async function GET(req: Request) {
   let removed = 0;
 
   for (const sub of subscribers) {
-    // 관심단지 중 오늘/내일 접수시작 또는 오늘 마감인 건.
+    const lead = Number.isFinite(sub.leadDays) ? sub.leadDays : 1;
+    // 관심단지 중: 접수시작이 D-lead 또는 당일, 또는 마감 당일인 건.
     const hits = sub.favorites
       .map((id) => byId.get(id))
       .filter((s): s is NonNullable<typeof s> => Boolean(s))
       .filter((s) => {
         const start = daysUntil(s.receiptStart, today);
         const end = daysUntil(s.receiptEnd, today);
-        return start === 0 || start === 1 || end === 0;
+        return start === lead || start === 0 || end === 0;
       });
     if (hits.length === 0) continue;
 
     const top = hits[0];
     const startD = daysUntil(top.receiptStart, today);
     const when =
-      startD === 0 ? "오늘 접수 시작" : startD === 1 ? "내일 접수 시작" : "오늘 마감";
+      startD === 0
+        ? "오늘 접수 시작"
+        : startD != null && startD > 0
+          ? `${startD}일 후 접수 시작`
+          : "오늘 마감";
     const payload = JSON.stringify({
       title: `🔔 청약 ${when}`,
       body: `관심단지 «${top.name}»${

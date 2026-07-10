@@ -17,16 +17,18 @@ export async function POST(req: Request) {
     );
   }
   try {
-    const { subscription, favorites } = await req.json();
+    const { subscription, favorites, leadDays } = await req.json();
     if (!subscription?.endpoint) {
       return NextResponse.json(
         { ok: false, error: "invalid subscription" },
         { status: 400 }
       );
     }
+    const lead = Number.isFinite(leadDays) ? Math.max(0, Math.min(14, leadDays)) : 1;
     await saveSubscriber(
       subscription,
-      Array.isArray(favorites) ? favorites : []
+      Array.isArray(favorites) ? favorites : [],
+      lead
     );
     return NextResponse.json({ ok: true });
   } catch {

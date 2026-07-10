@@ -11,6 +11,7 @@ export interface StoredSubscriber {
   endpoint: string;
   subscription: unknown; // PushSubscription JSON
   favorites: string[];
+  leadDays: number; // 접수 시작 며칠 전에 미리 알림 (0=당일만)
 }
 
 function getRedis(): Redis | null {
@@ -28,7 +29,8 @@ export function isPushStoreConfigured(): boolean {
 
 export async function saveSubscriber(
   subscription: { endpoint: string },
-  favorites: string[]
+  favorites: string[],
+  leadDays = 1
 ): Promise<boolean> {
   const redis = getRedis();
   if (!redis) return false;
@@ -36,6 +38,7 @@ export async function saveSubscriber(
     endpoint: subscription.endpoint,
     subscription,
     favorites,
+    leadDays,
   };
   await redis.hset(HASH, { [subscription.endpoint]: JSON.stringify(value) });
   return true;

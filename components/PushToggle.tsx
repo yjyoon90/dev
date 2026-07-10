@@ -24,8 +24,11 @@ export default function PushToggle() {
   const [subscribed, setSubscribed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState("");
+  const [leadDays, setLeadDays] = useState(1);
   const favRef = useRef(favorites);
   favRef.current = favorites;
+  const leadRef = useRef(leadDays);
+  leadRef.current = leadDays;
 
   const [browserOk, setBrowserOk] = useState(true);
 
@@ -36,6 +39,12 @@ export default function PushToggle() {
       "PushManager" in window &&
       "Notification" in window;
     setBrowserOk(browser);
+    try {
+      const saved = localStorage.getItem("cheongyak:leadDays");
+      if (saved != null) setLeadDays(Number(saved));
+    } catch {
+      /* 무시 */
+    }
     const ok = browser && !!VAPID_PUBLIC;
     setSupported(ok);
     if (!ok) return;
@@ -46,7 +55,7 @@ export default function PushToggle() {
       .catch(() => {});
   }, []);
 
-  // 구독 중일 때 관심단지가 바뀌면 서버에 동기화.
+  // 구독 중일 때 관심단지·알림시점이 바뀌면 서버에 동기화.
   useEffect(() => {
     if (!subscribed) return;
     navigator.serviceWorker
@@ -57,10 +66,10 @@ export default function PushToggle() {
         fetch("/api/push/subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ subscription: sub, favorites }),
+          body: JSON.stringify({ subscription: sub, favorites, leadDays }),
         }).catch(() => {});
       });
-  }, [favorites, subscribed]);
+  }, [favorites, subscribed, leadDays]);
 
   // VAPID 키가 없으면(설정 전) 아무것도 표시하지 않음.
   if (!VAPID_PUBLIC) return null;
@@ -102,7 +111,11 @@ export default function PushToggle() {
       const res = await fetch("/api/push/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscription: sub, favorites: favRef.current }),
+        body: JSON.stringify({
+          subscription: sub,
+          favorites: favRef.current,
+          leadDays: leadRef.current,
+        }),
       });
       if (!res.ok) throw new Error("서버 등록 실패");
       setSubscribed(true);
@@ -146,18 +159,41 @@ export default function PushToggle() {
           {msg || "관심단지 접수 시작·마감을 푸시로 알려드려요."}
         </p>
       </div>
-      <button
-        type="button"
-        onClick={subscribed ? disable : enable}
-        disabled={busy}
-        className={`shrink-0 rounded-lg px-3 py-1.5 text-sm font-semibold transition disabled:opacity-50 ${
-          subscribed
-            ? "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-            : "bg-brand-600 text-white hover:bg-brand-700"
-        }`}
-      >
-        {busy ? "처리 중…" : subscribed ? "끄기" : "켜기"}
-      </button>
+      <div className="flex shrink-0 items-center gap-2">
+        {subscribed && (
+          <select
+            value={leadDays}
+            onChange={(e) => {
+              const v = Number(e.target.value);
+              setLeadDays(v);
+              try {
+                localStorage.setItem("cheongyak:leadDays", String(v));
+              } catch {
+                /* 무시 */
+              }
+            }}
+            className="rounded-lg border-0 bg-slate-100 px-2 py-1.5 text-sm font-medium text-slate-600 outline-none dark:bg-slate-800 dark:text-slate-300"
+            aria-label="알림 시점"
+          >
+            <option value={0}>당일</option>
+            <option value={1}>1일 전</option>
+            <option value={3}>3일 전</option>
+            <option value={7}>7일 전</option>
+          </select>
+        )}
+        <button
+          type="button"
+          onClick={subscribed ? disable : enable}
+          disabled={busy}
+          className={`rounded-lg px-3 py-1.5 text-sm font-semibold transition disabled:opacity-50 ${
+            subscribed
+              ? "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              : "bg-brand-600 text-white hover:bg-brand-700"
+          }`}
+        >
+          {busy ? "처리 중…" : subscribed ? "끄기" : "켜기"}
+        </button>
+      </div>
     </div>
   );
 }
