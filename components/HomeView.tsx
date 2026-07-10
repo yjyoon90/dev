@@ -146,13 +146,13 @@ export default function HomeView({
       </div>
 
       {/* 검색 + 뷰 토글 */}
-      <div className="mb-3 flex gap-2">
+      <div className="mb-3 flex flex-wrap gap-2">
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="단지명·지역 검색"
-          className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-brand-500/20"
+          className="min-w-0 flex-1 basis-[60%] rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:ring-brand-500/20"
         />
         <div className="flex shrink-0 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
           <button
