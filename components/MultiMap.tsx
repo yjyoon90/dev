@@ -18,7 +18,8 @@ function cleanAddress(a: string): string {
   return a
     .split("외")[0]
     .split("(")[0]
-    .replace(/일원|일대|블록|블럭|BL|지구/gi, "")
+    .replace(/일원|일대|블록|블럭|BL|지구|번지/gi, "")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -50,10 +51,12 @@ export default function MultiMap({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [count, setCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!KAKAO_KEY || !ref.current) return;
     let cancelled = false;
+    setLoading(true);
     const targets = subscriptions.slice(0, MAX_MARKERS);
 
     loadSdk()
@@ -65,6 +68,13 @@ export default function MultiMap({
             center: new window.kakao.maps.LatLng(37.5665, 126.978), // 서울시청
             level: 9,
           });
+          // 뷰 전환 직후엔 컨테이너 크기 계산이 안 돼 지도가 빈 화면으로 뜰 수 있음 → relayout 필요
+          setTimeout(() => {
+            if (cancelled) return;
+            map.relayout();
+            map.setCenter(new window.kakao.maps.LatLng(37.5665, 126.978));
+            setLoading(false);
+          }, 250);
           const geocoder = new window.kakao.maps.services.Geocoder();
           const bounds = new window.kakao.maps.LatLngBounds();
           const infow = new window.kakao.maps.InfoWindow({ removable: true });
@@ -92,7 +102,7 @@ export default function MultiMap({
                       `<b>${s.name}</b><br/>` +
                       `<a href="/subscription/${encodeURIComponent(
                         s.id
-                      )}" style="color:#2563eb">상세 보기 →</a></div>`
+                      )}" style="color:#6366F1">상세 보기 →</a></div>`
                   );
                   infow.open(map, marker);
                 });
@@ -120,10 +130,14 @@ export default function MultiMap({
 
   return (
     <div>
-      <div
-        ref={ref}
-        className="h-[70vh] min-h-[360px] w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700"
-      />
+      <div className="relative h-[70vh] min-h-[360px] w-full overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700">
+        <div ref={ref} className="h-full w-full" />
+        {loading && (
+          <div className="absolute inset-0 grid place-items-center bg-slate-50 text-sm text-slate-400 dark:bg-slate-900">
+            지도 불러오는 중…
+          </div>
+        )}
+      </div>
       <p className="mt-2 text-xs text-slate-400">
         지도에 {count ?? 0}개 단지 표시 · 마커를 누르면 상세로 이동
         {subscriptions.length > MAX_MARKERS

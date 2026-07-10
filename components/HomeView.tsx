@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { HouseType, Region, Subscription } from "@/lib/types";
 import { getDistrict, getStatus, urgencyRank } from "@/lib/format";
 import { useFavorites } from "@/context/FavoritesContext";
@@ -64,6 +64,9 @@ export default function HomeView({
   const [tab] = useState<Tab>(initialTab);
   const [sort, setSort] = useState<SortMode>("임박순");
   const [sheetOpen, setSheetOpen] = useState(false);
+  const PAGE = 24;
+  const [visibleCount, setVisibleCount] = useState(PAGE);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   const activeFilterCount =
     (region !== "전체" ? 1 : 0) +
@@ -125,6 +128,29 @@ export default function HomeView({
     sort,
     today,
   ]);
+
+  // 필터/정렬/뷰가 바뀌면 다시 처음부터 보여준다.
+  useEffect(() => {
+    setVisibleCount(PAGE);
+  }, [region, district, type, status, query, sort, tab, view]);
+
+  // 무한 스크롤: 하단 센티넬이 보이면 24개씩 더 렌더.
+  useEffect(() => {
+    const el = sentinelRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((c) => c + PAGE);
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [filtered.length, visibleCount, view]);
+
+  const visible = filtered.slice(0, visibleCount);
 
   return (
     <div>
@@ -236,11 +262,21 @@ export default function HomeView({
             : "조건에 맞는 청약이 없습니다."}
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {filtered.map((s) => (
-            <SubscriptionCard key={s.id} sub={s} today={today} />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {visible.map((s) => (
+              <SubscriptionCard key={s.id} sub={s} today={today} />
+            ))}
+          </div>
+          {visibleCount < filtered.length && (
+            <div
+              ref={sentinelRef}
+              className="py-6 text-center text-sm text-slate-400"
+            >
+              불러오는 중… ({visible.length}/{filtered.length})
+            </div>
+          )}
+        </>
       )}
 
       {/* 필터 바텀시트 */}
