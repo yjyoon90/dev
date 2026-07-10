@@ -7,6 +7,7 @@ import type {
 import { normalizeDate } from "./format";
 import { buildSchedule } from "./schedule";
 import { mockSubscriptions } from "./mockData";
+import { getLHSubscriptions } from "./lh";
 
 /**
  * 청약홈 분양정보 조회 서비스 (공공데이터포털 15098547).
@@ -57,6 +58,7 @@ function mapRow(row: any, houseType: HouseType): Subscription | null {
     pblancNo: row.PBLANC_NO ? String(row.PBLANC_NO) : undefined,
     name: row.HOUSE_NM ?? "이름 미상",
     region,
+    source: "청약홈",
     address: row.HSSPLY_ADRES ?? row.HSSPLY_ZIP ?? "",
     houseType,
     houseDetail: row.HOUSE_DTL_SECD_NM ?? row.RENT_SECD_NM ?? row.HOUSE_SECD_NM,
@@ -135,10 +137,13 @@ export async function getSubscriptions(): Promise<{
     return { data: sortByReceipt(mockSubscriptions), usingSampleData: true };
   }
 
-  const batches = await Promise.all(
-    ENDPOINTS.map((e) => fetchEndpoint(e.path, e.houseType, serviceKey))
-  );
-  const all = batches.flat();
+  const [batches, lh] = await Promise.all([
+    Promise.all(
+      ENDPOINTS.map((e) => fetchEndpoint(e.path, e.houseType, serviceKey))
+    ),
+    getLHSubscriptions(), // LH 임대(같은 키). 실패 시 빈 배열.
+  ]);
+  const all = [...batches.flat(), ...lh];
 
   // API 호출은 성공했지만 데이터가 비어있을 때도 샘플로 폴백해 빈 화면을 방지.
   if (all.length === 0) {

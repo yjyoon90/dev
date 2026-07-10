@@ -11,6 +11,7 @@ export type HouseType =
   | "APT" // 아파트(민영/국민)
   | "무순위" // 무순위/잔여세대
   | "오피스텔/도시형" // 오피스텔·도시형생활주택·민간임대 등
+  | "임대" // LH 임대주택(국민임대·행복주택·전세임대 등)
   | "기타";
 
 /** 청약 일정 구간(라벨 + 시작/종료일). */
@@ -38,6 +39,8 @@ export interface Subscription {
   houseType: HouseType;
   /** 세부 공급 유형 텍스트(예: "민영", "국민", "도시형생활주택"). */
   houseDetail?: string;
+  /** 데이터 출처(청약홈/LH). */
+  source?: "청약홈" | "LH";
   /** 총 공급 세대수. */
   totalSupply?: number;
   /** 모집공고일. */

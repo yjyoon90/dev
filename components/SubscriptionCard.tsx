@@ -44,6 +44,11 @@ export default function SubscriptionCard({
             <span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-300">
               {sub.houseType}
             </span>
+            {sub.source === "LH" && (
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-bold text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300">
+                LH
+              </span>
+            )}
           </div>
           <h3 className="truncate text-base font-bold text-slate-900 group-hover:text-brand-700 dark:text-slate-100 dark:group-hover:text-brand-400">
             {sub.name}
@@ -55,11 +60,15 @@ export default function SubscriptionCard({
         <FavoriteButton id={sub.id} className="-mr-1 shrink-0" />
       </div>
 
-      {/* 핵심 한 줄: 청약접수일 + 공급규모 */}
+      {/* 핵심 한 줄: 접수일(또는 공고일/마감일) + 공급규모 */}
       <div className="mt-2.5 flex items-center gap-1.5 text-sm">
-        <span className="shrink-0 text-slate-400">청약접수</span>
+        <span className="shrink-0 text-slate-400">
+          {sub.receiptStart ? "청약접수" : sub.noticeDate ? "공고일" : "접수마감"}
+        </span>
         <span className="shrink-0 font-semibold text-slate-800 dark:text-slate-200">
-          {formatKoreanDate(sub.receiptStart)}
+          {formatKoreanDate(
+            sub.receiptStart ?? sub.noticeDate ?? sub.receiptEnd
+          )}
         </span>
         {sub.totalSupply != null && (
           <>
