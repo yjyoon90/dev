@@ -55,32 +55,21 @@ export default function SubscriptionCard({
         <FavoriteButton id={sub.id} className="-mr-1 shrink-0" />
       </div>
 
-      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-        <div className="flex min-w-0 justify-between gap-2">
-          <dt className="shrink-0 text-slate-400">청약접수</dt>
-          <dd className="truncate font-medium text-slate-700 dark:text-slate-300">
-            {formatKoreanDate(sub.receiptStart)}
-          </dd>
-        </div>
-        <div className="flex min-w-0 justify-between gap-2">
-          <dt className="shrink-0 text-slate-400">당첨발표</dt>
-          <dd className="truncate font-medium text-slate-700 dark:text-slate-300">
-            {formatKoreanDate(sub.winnerDate)}
-          </dd>
-        </div>
-        <div className="flex min-w-0 justify-between gap-2">
-          <dt className="shrink-0 text-slate-400">공급규모</dt>
-          <dd className="truncate font-medium text-slate-700 dark:text-slate-300">
-            {formatCount(sub.totalSupply)}
-          </dd>
-        </div>
-        <div className="flex min-w-0 justify-between gap-2">
-          <dt className="shrink-0 text-slate-400">입주예정</dt>
-          <dd className="truncate font-medium text-slate-700 dark:text-slate-300">
-            {sub.moveInMonth ?? "-"}
-          </dd>
-        </div>
-      </dl>
+      {/* 핵심 한 줄: 청약접수일 + 공급규모 */}
+      <div className="mt-2.5 flex items-center gap-1.5 text-sm">
+        <span className="shrink-0 text-slate-400">청약접수</span>
+        <span className="shrink-0 font-semibold text-slate-800 dark:text-slate-200">
+          {formatKoreanDate(sub.receiptStart)}
+        </span>
+        {sub.totalSupply != null && (
+          <>
+            <span className="shrink-0 text-slate-300 dark:text-slate-600">·</span>
+            <span className="shrink-0 text-slate-500 dark:text-slate-400">
+              {formatCount(sub.totalSupply)}
+            </span>
+          </>
+        )}
+      </div>
     </Link>
   );
 }
