@@ -1,5 +1,6 @@
 "use client";
 
+import { Star } from "lucide-react";
 import { useFavorites } from "@/context/FavoritesContext";
 
 export default function FavoriteButton({
@@ -22,13 +23,13 @@ export default function FavoriteButton({
         e.stopPropagation();
         toggle(id);
       }}
-      className={`grid h-8 w-8 place-items-center rounded-full text-lg transition ${
+      className={`grid h-8 w-8 place-items-center rounded-full transition ${
         active
           ? "text-amber-400"
           : "text-slate-300 hover:text-amber-400"
       } ${className}`}
     >
-      {active ? "★" : "☆"}
+      <Star size={20} strokeWidth={2} fill={active ? "currentColor" : "none"} />
     </button>
   );
 }

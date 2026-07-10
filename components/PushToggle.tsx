@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Bell } from "lucide-react";
 import { useFavorites } from "@/context/FavoritesContext";
 
 const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
@@ -152,8 +153,9 @@ export default function PushToggle() {
   return (
     <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-800 dark:bg-slate-900">
       <div className="text-sm">
-        <p className="font-semibold text-slate-800 dark:text-slate-200">
-          📲 앱을 꺼놔도 청약 알림 받기
+        <p className="flex items-center gap-1.5 font-semibold text-slate-800 dark:text-slate-200">
+          <Bell size={16} strokeWidth={2} className="text-brand-600 dark:text-brand-400" />
+          앱을 꺼놔도 청약 알림 받기
         </p>
         <p className="text-xs text-slate-400">
           {msg || "관심단지 접수 시작·마감을 푸시로 알려드려요."}

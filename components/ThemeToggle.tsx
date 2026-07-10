@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Moon, Sun } from "lucide-react";
 
 /** 라이트/다크 테마 토글. localStorage에 저장, <html>.dark 클래스로 적용. */
 export default function ThemeToggle() {
@@ -31,7 +32,15 @@ export default function ThemeToggle() {
       className="grid h-8 w-8 place-items-center rounded-lg text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
     >
       {/* 하이드레이션 불일치 방지: 마운트 전엔 빈 상태 */}
-      {mounted ? (dark ? "☀️" : "🌙") : ""}
+      {mounted ? (
+        dark ? (
+          <Sun size={18} strokeWidth={2} />
+        ) : (
+          <Moon size={18} strokeWidth={2} />
+        )
+      ) : (
+        <span className="h-[18px] w-[18px]" />
+      )}
     </button>
   );
 }

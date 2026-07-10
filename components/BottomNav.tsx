@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { Building2, Star, Calculator, Settings } from "lucide-react";
 
 const items = [
-  { href: "/", label: "청약", icon: "🏢" },
-  { href: "/favorites", label: "관심", icon: "★" },
-  { href: "/calculator", label: "가점", icon: "🧮" },
-  { href: "/settings", label: "설정", icon: "⚙️" },
+  { href: "/", label: "청약", Icon: Building2 },
+  { href: "/favorites", label: "관심", Icon: Star },
+  { href: "/calculator", label: "가점", Icon: Calculator },
+  { href: "/settings", label: "설정", Icon: Settings },
 ];
 
 export default function BottomNav() {
@@ -40,7 +41,11 @@ export default function BottomNav() {
                   : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
               }`}
             >
-              <span className="text-lg leading-none">{it.icon}</span>
+              <it.Icon
+                size={22}
+                strokeWidth={active ? 2.4 : 1.8}
+                fill={it.label === "관심" && active ? "currentColor" : "none"}
+              />
               {it.label}
             </Link>
           );

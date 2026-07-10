@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { BellRing } from "lucide-react";
 import type { Subscription } from "@/lib/types";
 import { getDday, getStatus, urgencyRank } from "@/lib/format";
 import { useFavorites } from "@/context/FavoritesContext";
@@ -71,8 +72,9 @@ export default function FavoriteAlerts({
   return (
     <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-500/30 dark:bg-red-500/10">
       <div className="mb-2 flex items-center justify-between gap-2">
-        <p className="text-sm font-bold text-red-700 dark:text-red-300">
-          🔔 관심단지 청약 임박 {imminent.length}건
+        <p className="flex items-center gap-1.5 text-sm font-bold text-red-700 dark:text-red-300">
+          <BellRing size={16} strokeWidth={2.2} />
+          관심단지 청약 임박 {imminent.length}건
         </p>
         {notify === "default" && (
           <button
