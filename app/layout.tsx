@@ -4,6 +4,7 @@ import { FavoritesProvider } from "@/context/FavoritesContext";
 import Header from "@/components/Header";
 import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 import BottomNav from "@/components/BottomNav";
+import { Analytics } from "@vercel/analytics/next";
 
 const siteUrl =
   process.env.NEXT_PUBLIC_SITE_URL || "https://dev-ruby-two.vercel.app";
@@ -62,6 +63,7 @@ export default function RootLayout({
             {children}
           </main>
           <BottomNav />
+          <Analytics />
         </FavoritesProvider>
       </body>
     </html>
