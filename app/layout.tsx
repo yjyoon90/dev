@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { FavoritesProvider } from "@/context/FavoritesContext";
 import Header from "@/components/Header";
+import ServiceWorkerRegister from "@/components/ServiceWorkerRegister";
 
 export const metadata: Metadata = {
   title: "수도권 청약 캘린더",
@@ -33,6 +34,7 @@ export default function RootLayout({
       </head>
       <body>
         <FavoritesProvider>
+          <ServiceWorkerRegister />
           <Header />
           <main className="mx-auto w-full max-w-[var(--max-w)] px-4 pb-16 pt-6">
             {children}

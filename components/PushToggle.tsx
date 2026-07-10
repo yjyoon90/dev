@@ -27,12 +27,16 @@ export default function PushToggle() {
   const favRef = useRef(favorites);
   favRef.current = favorites;
 
+  const [browserOk, setBrowserOk] = useState(true);
+
   useEffect(() => {
-    const ok =
+    const browser =
       typeof window !== "undefined" &&
       "serviceWorker" in navigator &&
       "PushManager" in window &&
-      !!VAPID_PUBLIC;
+      "Notification" in window;
+    setBrowserOk(browser);
+    const ok = browser && !!VAPID_PUBLIC;
     setSupported(ok);
     if (!ok) return;
     navigator.serviceWorker
@@ -57,6 +61,23 @@ export default function PushToggle() {
         }).catch(() => {});
       });
   }, [favorites, subscribed]);
+
+  // VAPID 키가 없으면(설정 전) 아무것도 표시하지 않음.
+  if (!VAPID_PUBLIC) return null;
+
+  // 키는 있는데 브라우저가 푸시 미지원 → 안내.
+  if (!browserOk) {
+    return (
+      <div className="mb-4 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+        📲 이 브라우저는 푸시 알림을 지원하지 않아요. <b>크롬</b>으로 열거나,
+        크롬에서 <b>홈 화면에 추가(앱 설치)</b> 후 사용해주세요.
+        <br />
+        <span className="text-xs">
+          (네이버·카톡 등 인앱 브라우저는 푸시 미지원)
+        </span>
+      </div>
+    );
+  }
 
   if (!supported) return null;
 

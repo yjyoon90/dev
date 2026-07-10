@@ -1,5 +1,11 @@
 /* 웹 푸시 서비스 워커 — 앱이 닫혀 있어도 알림을 수신/표시한다. */
 
+// fetch 핸들러(무동작)를 두면 크롬이 PWA "앱 설치" 대상으로 인식한다.
+self.addEventListener("fetch", () => {});
+
+self.addEventListener("install", () => self.skipWaiting());
+self.addEventListener("activate", (e) => e.waitUntil(self.clients.claim()));
+
 self.addEventListener("push", (event) => {
   let data = {};
   try {
